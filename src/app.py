@@ -62,7 +62,7 @@ class Interface(tk.Tk):
 
         self.__video_feed = True
         self.cv_cam = cv2.VideoCapture(0)
-        self.after(1, self.update_video)
+        self.after(1, self.update_video) # call function after 1 millisecond
 
     def update_video(self):
         if self.__video_feed:
@@ -74,8 +74,8 @@ class Interface(tk.Tk):
 
             self.label_video.config(image=img_tk)
             self.label_video.image = img_tk
-            
-            self.after(1, self.update_video)
+
+            self.after(1, self.update_video) # repeat function after 1 millisecond
 
 
     def scan(self):
