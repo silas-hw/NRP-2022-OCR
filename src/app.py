@@ -60,9 +60,16 @@ class Interface(tk.Tk):
         # image capture #
         #################
 
-        self.__video_feed = True
+        self.__video_feed = True # determines whether the video feed should be updated or not
         self.cv_cam = cv2.VideoCapture(0)
-        self.after(1, self.update_video) # call function after 1 millisecond
+        self.start_video()
+
+    def stop_video(self):
+        self.__video_feed = False
+
+    def start_video(self):
+        self.__video_feed = True
+        self.after(1, self.update_video)
 
     def update_video(self):
         if self.__video_feed:
