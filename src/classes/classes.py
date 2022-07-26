@@ -3,6 +3,8 @@
 #   - OCR
 #   - Text-to-speech
 # Image capturing will be handled by the UI so don't worry about that
+import pytesseract
+from PIL import Image
 
 class OCR:
 
@@ -10,4 +12,6 @@ class OCR:
         pass
 
     def scan_image(self, image):
+        textFromImage = pytesseract.image_to_string(Image.open('./image.jpg'))
+
         pass
