@@ -4,8 +4,8 @@
 #   - Text-to-speech
 # Image capturing will be handled by the UI so don't worry about that
 import pytesseract
-import gtts
-from playsound import playsound
+import pyttsx3
+
 
 class OCR:
 
@@ -15,12 +15,15 @@ class OCR:
     def scan_image(self, image):
         return pytesseract.image_to_string(image)
 
-        pass
-
     def tts(self,text):
-        tts = gtts.gTTS(text)
-        tts.save("tts.mp3")
+        # initialises the tts engine
+        engine = pyttsx3.init()
 
-        playsound("./tts.mp3")
+        # the speed of the tts
+        engine.setProperty("rate", 150)
 
-        pass
+        # tells the tts engine what it needs to say
+        engine.say(text)
+
+        # runs the tts engine
+        engine.runAndWait()
