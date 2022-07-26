@@ -124,7 +124,7 @@ class Interface(tk.Tk):
         allows the user to change what directory the captured image is saved to
         '''
 
-        new_dir = filedialog.asksaveasfilename(filetypes=[("JPEG Image", ".jpg")])
+        new_dir = filedialog.asksaveasfilename(filetypes=[("JPEG Image", ".jpg"), ("PNG Image", ".png")])
         self.saveimg_dir.delete(0, tk.END)
         self.saveimg_dir.insert(0, new_dir)
 
