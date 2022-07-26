@@ -4,7 +4,8 @@
 #   - Text-to-speech
 # Image capturing will be handled by the UI so don't worry about that
 import pytesseract
-from PIL import Image
+import gtts
+from playsound import playsound
 
 class OCR:
 
@@ -13,5 +14,13 @@ class OCR:
 
     def scan_image(self, image):
         return pytesseract.image_to_string(image)
+
+        pass
+
+    def tts(self,text):
+        tts = gtts.gTTS(text)
+        tts.save("tts.mp3")
+
+        playsound("./tts.mp3")
 
         pass
