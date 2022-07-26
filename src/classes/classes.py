@@ -12,6 +12,6 @@ class OCR:
         pass
 
     def scan_image(self, image):
-        return pytesseract.image_to_string(Image.open(image))
+        return pytesseract.image_to_string(image)
 
         pass
