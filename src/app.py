@@ -47,7 +47,8 @@ class Interface(tk.Tk):
         self.check_saveimg = ttk.Checkbutton(self.frame_settings, variable=self.var_saveimg)
         self.check_saveimg.grid(row=2, column=1)
         
-        self.saveimg_dir = ttk.Entry(self.frame_settings)
+        dir_width = 50
+        self.saveimg_dir = ttk.Entry(self.frame_settings, width=dir_width)
         self.saveimg_dir.grid(row=2, column=2)
 
         self.butt_saveimg_changedir = ttk.Button(self.frame_settings, text="...", width=3, command=self.change_saveimg_dir)
@@ -61,7 +62,7 @@ class Interface(tk.Tk):
         self.check_savetxt = ttk.Checkbutton(self.frame_settings, variable=self.var_savetxt)
         self.check_savetxt.grid(row=3, column=1)
 
-        self.savetxt_dir = ttk.Entry(self.frame_settings)
+        self.savetxt_dir = ttk.Entry(self.frame_settings, width=dir_width)
         self.savetxt_dir.grid(row=3, column=2)
 
         self.butt_savetxt_changedir = ttk.Button(self.frame_settings, text="...", width=3, command=self.change_savetxt_dir)
@@ -75,7 +76,7 @@ class Interface(tk.Tk):
         self.check_saveaudio = ttk.Checkbutton(self.frame_settings, variable=self.var_saveaudio)
         self.check_saveaudio.grid(row=4, column=1)
 
-        self.saveaudio_dir = ttk.Entry(self.frame_settings)
+        self.saveaudio_dir = ttk.Entry(self.frame_settings, width=dir_width)
         self.saveaudio_dir.grid(row=4, column=2)
 
         self.butt_saveaudio_changedir = ttk.Button(self.frame_settings, text="...", width=3, command=self.change_saveaudio_dir)
