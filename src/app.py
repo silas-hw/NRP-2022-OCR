@@ -6,10 +6,13 @@ import cv2 as cv2
 
 from PIL import Image, ImageTk
 
+import classes
 class Interface(tk.Tk):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs) # call the init function of the inherited class
+
+        self.ocr = classes.OCR()
         
         ###################
         # tkinter widgets #
