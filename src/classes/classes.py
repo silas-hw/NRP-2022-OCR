@@ -12,6 +12,9 @@ class OCR:
     def __init__(self):
         pass
 
+    def preprocess(self, image):
+        pass
+    
     def scan_image(self, image):
         return pytesseract.image_to_string(image)
 
