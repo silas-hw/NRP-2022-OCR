@@ -6,6 +6,7 @@
 from xmlrpc.client import Boolean
 import pytesseract
 import pyttsx3
+import cv2
 
 
 class OCR:
@@ -14,6 +15,10 @@ class OCR:
         self.tts_rate = 150
 
     def preprocess(self, image):
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) # convert to grayscale
+        image = cv2.medianBlur(image,5) # reduce noise
+        image = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1] # threshold image
+
         return image
     
     def scan_image(self, image, preprocess:bool):
