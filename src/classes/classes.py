@@ -10,8 +10,8 @@ import pyttsx3
 
 class OCR:
 
-    def __init__(self):
-        pass
+    def __init__(self, tts_rate=150):
+        self.tts_rate = 150
 
     def preprocess(self, image):
         return image
@@ -27,7 +27,7 @@ class OCR:
         engine = pyttsx3.init()
 
         # the speed of the tts
-        engine.setProperty("rate", 150)
+        engine.setProperty("rate", self.tts_rate)
 
         # tells the tts engine what it needs to say
         engine.say(text)
