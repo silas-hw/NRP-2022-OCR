@@ -9,12 +9,6 @@ import pyttsx3
 import cv2
 import numpy as np
 
-import nltk
-from nltk.corpus import words 
-from nltk.metrics.distance import edit_distance, jaccard_distance
-from nltk.util import ngrams
-nltk.download('words')
-
 import autocorrect
 
 class OCR:
