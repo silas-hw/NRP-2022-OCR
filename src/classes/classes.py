@@ -15,6 +15,7 @@ from nltk.metrics.distance import edit_distance, jaccard_distance
 from nltk.util import ngrams
 nltk.download('words')
 
+import autocorrect
 
 class OCR:
 
@@ -24,6 +25,8 @@ class OCR:
                                     [-1, 5,-1],
                                     [0, -1, 0]])
 
+        self.speller = autocorrect.Speller()
+
     def preprocess(self, image):
         
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) # convert to grayscale
@@ -32,39 +35,13 @@ class OCR:
 
         return image
 
-    def respell(self, text):
-        '''
-        corrects any incorrect words using NLTK and edit distance
-        '''
-        out = ''
-        word_list = text.split()
-        for entry in word_list:
-            end = [char for char in entry if char in ['...', '.', ',', '!', '?']]
-            entry.remove(['.', ',', '!', '?'])
-
-            corrected = entry # corrected word
-            shortest_distance = 1000 # the shortest edit distance currently found
-            for word in words.words():
-                distance = edit_distance(entry, word)
-                if word==entry: # if the entered word is correctly spelt, stop searching
-                    corrected = word
-                    break
-                
-                if distance < shortest_distance:
-                    shortest_distance = distance
-                    corrected = word
-            
-            corrected.join(end)
-            out += f'{corrected} '
-
-
-        return text
-
     def scan_image(self, image, preprocess:bool):
         if preprocess:
             image = self.preprocess(image)
-            
-        return image, pytesseract.image_to_string(image)
+        
+        txt = pytesseract.image_to_string(image)
+        txt = self.speller(txt)
+        return image, txt
 
     def tts(self,text):
         # initialises the tts engine
