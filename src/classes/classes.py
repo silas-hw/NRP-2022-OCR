@@ -31,7 +31,7 @@ class OCR:
         image = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1] # threshold image
 
         return image
-    
+        
     def scan_image(self, image, preprocess:bool):
         if preprocess:
             image = self.preprocess(image)
