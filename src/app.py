@@ -1,6 +1,6 @@
 import tkinter as tk
 import tkinter.ttk as ttk
-from tkinter import filedialog
+from tkinter import filedialog, simpledialog
 
 import cv2 as cv2
 
@@ -14,6 +14,8 @@ class Interface(tk.Tk):
 
         self.ocr = classes.OCR()
         
+        self.current_img = None
+
         ###################
         # tkinter widgets #
         ###################
@@ -106,6 +108,7 @@ class Interface(tk.Tk):
         if self.__video_feed:
             result, img = self.cv_cam.read()
 
+            self.current_img = img
             img_arr = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             img_pil = Image.fromarray(img_arr)
             img_tk = ImageTk.PhotoImage(img_pil)
@@ -120,7 +123,20 @@ class Interface(tk.Tk):
         '''
         called when the user presses the 'scan image' button
         '''
-        pass
+        img = self.current_img
+
+        if self.var_saveimg.get():
+            filename = simpledialog.askstring('Image Name', 'Enter image file name')
+            cv2.imwrite(f'{self.saveimg_dir.get()}/{filename}.jpg', img)
+
+        txt = self.ocr.scan_image(img)
+
+        if self.var_savetxt.get():
+            filename = simpledialog.askstring('Text File Name', 'Enter text file name')
+            with open(f'{self.savetxt_dir.get()}/{filename}.jpg', 'w') as f:
+                f.write(txt)
+
+        self.ocr.tts(txt)
     
     def change_saveimg_dir(self):
         '''
