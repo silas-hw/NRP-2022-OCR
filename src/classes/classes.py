@@ -25,7 +25,6 @@ class OCR:
         
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) # convert to grayscale
         image = cv2.filter2D(src=image, ddepth=-1, kernel=self.img_kernel) # sharpen
-        image = cv2.bitwise_not(image)
         image = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1] # threshold image
 
         image = self.deskew(image)
