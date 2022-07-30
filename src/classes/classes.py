@@ -25,8 +25,10 @@ class OCR:
         
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) # convert to grayscale
         image = cv2.filter2D(src=image, ddepth=-1, kernel=self.img_kernel) # sharpen
+        image = cv2.bitwise_not(image)
         image = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1] # threshold image
 
+        image = self.deskew(image)
         return image
 
     def scan_image(self, image, preprocess:bool):
@@ -51,12 +53,7 @@ class OCR:
         engine.runAndWait()
     
     def deskew(self,image):
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        image = cv2.bitwise_not(image)
-        thresh = cv2.threshold(image, 0, 255,
-            cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
-
-        coords = np.column_stack(np.where(thresh > 0))
+        coords = np.column_stack(np.where(image == 0)) # image should already be thresheld, so we can assume any black pixel is text
         angle = cv2.minAreaRect(coords)[-1]
 
         if angle < -45:
