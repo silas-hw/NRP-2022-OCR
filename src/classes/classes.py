@@ -3,6 +3,7 @@
 #   - OCR
 #   - Text-to-speech
 # Image capturing will be handled by the UI so don't worry about that
+from xmlrpc.client import Boolean
 import pytesseract
 import pyttsx3
 
@@ -13,9 +14,12 @@ class OCR:
         pass
 
     def preprocess(self, image):
-        pass
+        return image
     
-    def scan_image(self, image):
+    def scan_image(self, image, preprocess:bool):
+        if preprocess:
+            image = self.prepocess(image)
+            
         return pytesseract.image_to_string(image)
 
     def tts(self,text):
