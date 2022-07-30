@@ -126,11 +126,11 @@ class Interface(tk.Tk):
         img = self.current_img
         preprocess = self.var_preprocess.get()
 
+        processed_img, txt = self.ocr.scan_image(img, preprocess)
+
         if self.var_saveimg.get():
             filename = simpledialog.askstring('Image Name', 'Enter image file name')
-            cv2.imwrite(f'{self.saveimg_dir.get()}/{filename}.jpg', img)
-
-        txt = self.ocr.scan_image(img, preprocess)
+            cv2.imwrite(f'{self.saveimg_dir.get()}/{filename}.jpg', processed_img)
 
         if self.var_savetxt.get():
             filename = simpledialog.askstring('Text File Name', 'Enter text file name')

@@ -25,7 +25,7 @@ class OCR:
         if preprocess:
             image = self.preprocess(image)
             
-        return pytesseract.image_to_string(image)
+        return image, pytesseract.image_to_string(image)
 
     def tts(self,text):
         # initialises the tts engine
