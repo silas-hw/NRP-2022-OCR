@@ -23,7 +23,7 @@ class OCR:
     
     def scan_image(self, image, preprocess:bool):
         if preprocess:
-            image = self.prepocess(image)
+            image = self.preprocess(image)
             
         return pytesseract.image_to_string(image)
 
