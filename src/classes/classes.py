@@ -7,16 +7,21 @@ from xmlrpc.client import Boolean
 import pytesseract
 import pyttsx3
 import cv2
+import numpy as np
 
 
 class OCR:
 
     def __init__(self, tts_rate=150):
         self.tts_rate = 150
+        self.img_kernel = np.array([[0, -1, 0],
+                                    [-1, 5,-1],
+                                    [0, -1, 0]])
 
     def preprocess(self, image):
+        
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) # convert to grayscale
-        image = cv2.medianBlur(image,5) # reduce noise
+        image = cv2.filter2D(src=image, ddepth=-1, kernel=self.img_kernel) # sharpen
         image = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1] # threshold image
 
         return image
