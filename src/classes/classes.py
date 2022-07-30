@@ -32,6 +32,34 @@ class OCR:
 
         return image
 
+    def respell(self, text):
+        '''
+        corrects any incorrect words using NLTK and edit distance
+        '''
+        out = ''
+        word_list = text.split()
+        for entry in word_list:
+            end = [char for char in entry if char in ['...', '.', ',', '!', '?']]
+            entry.remove(['.', ',', '!', '?'])
+
+            corrected = entry # corrected word
+            shortest_distance = 1000 # the shortest edit distance currently found
+            for word in words.words():
+                distance = edit_distance(entry, word)
+                if word==entry: # if the entered word is correctly spelt, stop searching
+                    corrected = word
+                    break
+                
+                if distance < shortest_distance:
+                    shortest_distance = distance
+                    corrected = word
+            
+            corrected.join(end)
+            out += f'{corrected} '
+
+
+        return text
+
     def scan_image(self, image, preprocess:bool):
         if preprocess:
             image = self.preprocess(image)
@@ -70,8 +98,5 @@ class OCR:
         M = cv2.getRotationMatrix2D(center, angle, 1.0)
         image = cv2.warpAffine(image, M, (w, h),
             flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
-
-        cv2.putText(image, "Angle: {:.2f} degrees".format(angle),
-            (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
         
         return image
