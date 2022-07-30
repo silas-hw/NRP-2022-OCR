@@ -127,7 +127,7 @@ class Interface(tk.Tk):
         allows the user to change what directory the captured image is saved to
         '''
 
-        new_dir = filedialog.asksaveasfilename(filetypes=[("JPEG Image", ".jpg"), ("PNG Image", ".png")])
+        new_dir = filedialog.askdirectory()
         self.saveimg_dir.delete(0, tk.END)
         self.saveimg_dir.insert(0, new_dir)
 
@@ -136,7 +136,7 @@ class Interface(tk.Tk):
         allows the user to change what directory the scanned text is saved to
         '''
 
-        new_dir = filedialog.asksaveasfilename(filetypes=[("Text Document", ".txt")])
+        new_dir = filedialog.askdirectory()
         self.savetxt_dir.delete(0, tk.END)
         self.savetxt_dir.insert(0, new_dir)
 
@@ -145,7 +145,7 @@ class Interface(tk.Tk):
         allows the user to change what directory the tts audio is saved to
         '''
 
-        new_dir = filedialog.asksaveasfilename(filetypes=[("MP3 Audio", ".mp3")])
+        new_dir = filedialog.askdirectory()
         self.saveaudio_dir.delete(0, tk.END)
         self.saveaudio_dir.insert(0, new_dir)
 
