@@ -31,7 +31,7 @@ class OCR:
         image = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1] # threshold image
 
         return image
-        
+
     def scan_image(self, image, preprocess:bool):
         if preprocess:
             image = self.preprocess(image)
@@ -52,7 +52,6 @@ class OCR:
         engine.runAndWait()
     
     def deskew(self,image):
-        image = cv2.imread('image.jpg')
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         image = cv2.bitwise_not(image)
         thresh = cv2.threshold(image, 0, 255,
