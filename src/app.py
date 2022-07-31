@@ -25,9 +25,15 @@ class Interface(tk.Tk):
         self.label_video = tk.Label(self.frame_main)
         self.label_video.grid(row=0, column=0)
 
-        self.butt_scan = ttk.Button(self.frame_main, text="Scan Image", command=self.scan)
+        self.frame_butts = tk.Frame(self.frame_main)
+
+        self.butt_scan = ttk.Button(self.frame_butts, text="Scan Image", command= lambda: self.scan(self.current_img))
         self.butt_scan.grid(row=1, column=0)
 
+        self.butt_import = ttk.Button(self.frame_butts, text="Import Image ⭳", command=self.import_image)
+        self.butt_import.grid(row=1, column=1)
+
+        self.frame_butts.grid(row=1, column=0)
         self.frame_main.grid(row=0, column=0)
 
         ############
@@ -119,11 +125,10 @@ class Interface(tk.Tk):
             self.after(150, self.update_video) # repeat function after 1 millisecond
 
 
-    def scan(self):
+    def scan(self, img):
         '''
         called when the user presses the 'scan image' button
         '''
-        img = self.current_img
         preprocess = self.var_preprocess.get()
 
         processed_img, txt = self.ocr.scan_image(img, preprocess)
@@ -138,6 +143,11 @@ class Interface(tk.Tk):
                 f.write(txt)
 
         self.ocr.tts(txt)
+
+    def import_image(self):
+        filedir = filedialog.askopenfilename(filetypes=[('JPEG Image', '.jpg'), ('PNG Image', '.png')])
+        img = cv2.imread(filedir)
+        self.scan(img)
     
     def change_saveimg_dir(self):
         '''
