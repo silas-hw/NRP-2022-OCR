@@ -34,7 +34,7 @@ class OCR:
             image = self.preprocess(image)
         
         txt = pytesseract.image_to_string(image)
-        txt = self.speller(txt)
+        txt = self.speller(txt) # autocorrect text to fix any minor ocr errors
         return image, txt
 
     def tts(self,text):
