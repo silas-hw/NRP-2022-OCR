@@ -14,7 +14,7 @@ import autocorrect
 class OCR:
 
     def __init__(self, tts_rate=150):
-        self.tts_rate = 150
+        self.tts_rate = 150 # alters the rate at which TTS 'speaks'
         self.img_kernel = np.array([[0, -1, 0],
                                     [-1, 5,-1],
                                     [0, -1, 0]])
@@ -52,7 +52,7 @@ class OCR:
     
     def deskew(self,image):
         thresh = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
-        coords = np.column_stack(np.where(thresh == 0)) # image should already be thresheld, so we can assume any black pixel is text
+        coords = np.column_stack(np.where(thresh == 0)) # image is thresheld so any black pixel should be text
         angle = cv2.minAreaRect(coords)[-1]
 
         if angle < -45:
