@@ -11,10 +11,12 @@ import numpy as np
 
 import autocorrect
 
+import multiprocessing as mp
+
 class OCR:
 
     def __init__(self, tts_rate=150):
-        self.tts_rate = 150 # alters the rate at which TTS 'speaks'
+        self.tts_rate = tts_rate
         self.img_kernel = np.array([[0, -1, 0],
                                     [-1, 5,-1],
                                     [0, -1, 0]])
@@ -55,15 +57,18 @@ class OCR:
         txt = self.speller(txt) # autocorrect text to fix any minor ocr errors
         return image, txt
 
-    def tts(self,text):
-        # initialises the tts engine
-        engine = pyttsx3.init()
+    def tts(self, txt):
+        process = mp.Process(target=self.tts_callback, args=(txt, self.tts_rate))
+        process.start()
 
-        # the speed of the tts
-        engine.setProperty("rate", self.tts_rate)
+    def tts_callback(self, txt, tts_rate):
+        '''
+        used as a target for multiprocessing
 
-        # tells the tts engine what it needs to say
-        engine.say(text)
-
-        # runs the tts engine
-        engine.runAndWait()
+        Note: Python seems to kill 'zombie' processes as soon as their target function finishes running
+        '''
+        
+        tts_engine = pyttsx3.init()
+        tts_engine.setProperty('rate', tts_rate)
+        tts_engine.say(txt)
+        tts_engine.runAndWait()

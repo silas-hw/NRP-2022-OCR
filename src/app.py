@@ -2,11 +2,14 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import filedialog, simpledialog
 
-import cv2 as cv2
+import multiprocessing
 
+import cv2 as cv2
 from PIL import Image, ImageTk
 
 import classes
+
+
 class Interface(tk.Tk):
 
     def __init__(self, *args, **kwargs):
@@ -27,7 +30,7 @@ class Interface(tk.Tk):
 
         self.frame_butts = tk.Frame(self.frame_main)
 
-        self.butt_scan = ttk.Button(self.frame_butts, text="Scan Image", command= lambda: self.scan(self.current_img))
+        self.butt_scan = ttk.Button(self.frame_butts, text="Scan Image", command=lambda: self.scan(self.current_img))
         self.butt_scan.grid(row=1, column=0)
 
         self.butt_import = ttk.Button(self.frame_butts, text="Import Image ⭳", command=self.import_image)
@@ -129,6 +132,7 @@ class Interface(tk.Tk):
         '''
         called when the user presses the 'scan image' button
         '''
+        self.stop_video()
         preprocess = self.var_preprocess.get()
 
         processed_img, txt = self.ocr.scan_image(img, preprocess)
@@ -143,6 +147,8 @@ class Interface(tk.Tk):
                 f.write(txt)
 
         self.ocr.tts(txt)
+
+        self.start_video()
 
     def import_image(self):
         filedir = filedialog.askopenfilename(filetypes=[('JPEG Image', '.jpg'), ('PNG Image', '.png')])
