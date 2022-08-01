@@ -132,7 +132,12 @@ class Interface(tk.Tk):
         '''
         called when the user presses the 'scan image' button
         '''
+        # deactivate buttons
+        self.butt_scan.state(['disabled'])
+        self.butt_import.state(['disabled'])
+        
         self.stop_video()
+
         preprocess = self.var_preprocess.get()
 
         processed_img, txt = self.ocr.scan_image(img, preprocess)
@@ -145,10 +150,18 @@ class Interface(tk.Tk):
             filename = simpledialog.askstring('Text File Name', 'Enter text file name')
             with open(f'{self.savetxt_dir.get()}/{filename}.jpg', 'w') as f:
                 f.write(txt)
-
+        
+        tts_time = int((len(txt.split())/self.ocr.tts_rate)*60000) + 3500 # how long the TTS should take in milliseconds
         self.ocr.tts(txt)
+        
+        self.after(tts_time, self.scan_finished)
 
+    def scan_finished(self):
         self.start_video()
+
+        # reactivate buttons
+        self.butt_scan.state(['!disabled'])
+        self.butt_import.state(['!disabled'])
 
     def import_image(self):
         filedir = filedialog.askopenfilename(filetypes=[('JPEG Image', '.jpg'), ('PNG Image', '.png')])
