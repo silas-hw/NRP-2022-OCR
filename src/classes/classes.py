@@ -6,6 +6,7 @@
 import pytesseract
 import pyttsx3
 import cv2
+import re
 import numpy as np
 
 import autocorrect
@@ -30,10 +31,24 @@ class OCR:
         image = self.deskew(image)
         return image
         
-    def deskew(self,image):
+    def deskew(self, image):
         '''
         orientates an image so any text displayed is correctly aligned
         '''
+        angle = self.__get_deskew_angle(image)
+    
+        (h, w) = image.shape[:2]
+        center = (w // 2, h // 2)
+        m = cv2.getRotationMatrix2D(center, angle, 1.0)
+        image = cv2.warpAffine(image, m, (w, h),
+            flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
+        
+        if self.__get_deskew_angle(image) == 0:
+            return image
+        return self.deskew(image)
+        
+
+    def __get_deskew_angle(self, image):
         thresh = cv2.bitwise_not(image) # inverse colours
         thresh = cv2.threshold(thresh, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
         coords = np.column_stack(np.where(thresh > 0)) # image is thresheld so any black pixel should be text
@@ -42,13 +57,16 @@ class OCR:
         if angle > 45:
             angle = 90 - angle
 
-        (h, w) = image.shape[:2]
-        center = (w // 2, h // 2)
+        return angle
+
+    def deskew_osd(self, image):
+        osd = pytesseract.image_to_osd(image)
+        angle = re.search('(?<=Rotate: )\d+', osd).group(0)
+
+        h, w = image.shape[:2]
+        center = (w//2, h//2)
         m = cv2.getRotationMatrix2D(center, angle, 1.0)
-        image = cv2.warpAffine(image, m, (w, h),
-            flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
-        
-        return image
+        image = cv2.warpAffine(image, m, (w, h), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
 
     def scan_image(self, image, preprocess:bool):
         if preprocess:
