@@ -27,26 +27,25 @@ class OCR:
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) # convert to grayscale
         #image = cv2.filter2D(src=image, ddepth=-1, kernel=self.img_kernel) # sharpen
 
-        #image = self.deskew(image)
+        image = self.deskew(image)
         return image
         
     def deskew(self,image):
         '''
         orientates an image so any text displayed is correctly aligned
         '''
-        thresh = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
-        coords = np.column_stack(np.where(thresh == 0)) # image is thresheld so any black pixel should be text
-        angle = cv2.minAreaRect(coords)[-1]
+        thresh = cv2.bitwise_not(image) # inverse colours
+        thresh = cv2.threshold(thresh, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
+        coords = np.column_stack(np.where(thresh > 0)) # image is thresheld so any black pixel should be text
+        angle = cv2.minAreaRect(coords)[-1] # angle will be between 0 (exclusive) and 90 (inclusive)
 
-        if angle < -45:
-            angle = -(90 + angle)
-        else:
-            angle = -angle
+        if angle > 45:
+            angle = 90 - angle
 
         (h, w) = image.shape[:2]
         center = (w // 2, h // 2)
-        M = cv2.getRotationMatrix2D(center, angle, 1.0)
-        image = cv2.warpAffine(image, M, (w, h),
+        m = cv2.getRotationMatrix2D(center, angle, 1.0)
+        image = cv2.warpAffine(image, m, (w, h),
             flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
         
         return image
