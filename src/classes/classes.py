@@ -59,15 +59,6 @@ class OCR:
 
         return angle
 
-    def deskew_osd(self, image):
-        osd = pytesseract.image_to_osd(image)
-        angle = re.search('(?<=Rotate: )\d+', osd).group(0)
-
-        h, w = image.shape[:2]
-        center = (w//2, h//2)
-        m = cv2.getRotationMatrix2D(center, angle, 1.0)
-        image = cv2.warpAffine(image, m, (w, h), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
-
     def scan_image(self, image, preprocess:bool):
         if preprocess:
             image = self.preprocess(image)
