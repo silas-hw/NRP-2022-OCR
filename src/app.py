@@ -145,8 +145,12 @@ class Interface(tk.Tk):
         self.stop_video()
 
         preprocess = self.var_preprocess.get()
+        showimg = self.var_showimg.get()
 
         processed_img, txt = self.ocr.scan_image(img, preprocess)
+
+        if showimg:
+            self.display_image(processed_img)
 
         # save the image if the user specified to do so
         if self.var_saveimg.get():
@@ -188,7 +192,9 @@ class Interface(tk.Tk):
         img_tk = self.__cv_to_tk(cv_img)
         window = tk.Toplevel()
         window.title(msg)
-        tk.Label(window, image=img_tk).pack()
+        label_img = tk.Label(window, image=img_tk)
+        label_img.image = img_tk
+        label_img.pack()
 
     
     def change_saveimg_dir(self):
