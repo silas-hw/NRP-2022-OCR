@@ -3,7 +3,6 @@
 #   - OCR
 #   - Text-to-speech
 # Image capturing will be handled by the UI so don't worry about that
-from xmlrpc.client import Boolean
 import pytesseract
 import pyttsx3
 import cv2
