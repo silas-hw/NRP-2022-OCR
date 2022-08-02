@@ -142,19 +142,21 @@ class Interface(tk.Tk):
 
         processed_img, txt = self.ocr.scan_image(img, preprocess)
 
+        # save the image if the user specified to do so
         if self.var_saveimg.get():
             filename = simpledialog.askstring('Image Name', 'Enter image file name')
             cv2.imwrite(f'{self.saveimg_dir.get()}/{filename}.jpg', processed_img)
 
+        # save the text if the user specified to do so
         if self.var_savetxt.get():
             filename = simpledialog.askstring('Text File Name', 'Enter text file name')
             with open(f'{self.savetxt_dir.get()}/{filename}.jpg', 'w') as f:
                 f.write(txt)
         
-        tts_time = int((len(txt.split())/self.ocr.tts_rate)*60000) + 3500 # how long the TTS should take in milliseconds
+        tts_time = int((len(txt.split())/self.ocr.tts_rate)*60000) + 3500 # calculate how long the TTS should take in milliseconds
         self.ocr.tts(txt)
         
-        self.after(tts_time, self.scan_finished)
+        self.after(tts_time, self.scan_finished) # wait the amount of time the TTS should take to reactive buttons
 
     def scan_finished(self):
         self.start_video()
@@ -164,6 +166,9 @@ class Interface(tk.Tk):
         self.butt_import.state(['!disabled'])
 
     def import_image(self):
+        '''
+        Import an image and scan it
+        '''
         filedir = filedialog.askopenfilename(filetypes=[('JPEG Image', '.jpg'), ('PNG Image', '.png')])
         img = cv2.imread(filedir)
         self.scan(img)

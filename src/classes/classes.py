@@ -31,6 +31,9 @@ class OCR:
         return image
         
     def deskew(self,image):
+        '''
+        orientates an image so any text displayed is correctly aligned
+        '''
         thresh = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
         coords = np.column_stack(np.where(thresh == 0)) # image is thresheld so any black pixel should be text
         angle = cv2.minAreaRect(coords)[-1]
@@ -57,6 +60,7 @@ class OCR:
         return image, txt
 
     def tts(self, txt):
+        # run the TTS in a seperate process
         process = mp.Process(target=self.tts_callback, args=(txt, self.tts_rate))
         process.start()
 
