@@ -53,48 +53,56 @@ class Interface(tk.Tk):
         self.check_preprocess = ttk.Checkbutton(self.frame_settings, variable=self.var_preprocess)
         self.check_preprocess.grid(row=1, column=1)
 
+        # sets if the preprocessed image gets displayed to the user
+        self.label_showimg = tk.Label(self.frame_settings, text="Display Processed Image")
+        self.label_showimg.grid(row=2, column=0)
+
+        self.var_showimg = tk.BooleanVar(value=True)
+        self.check_showimg = ttk.Checkbutton(self.frame_settings, variable=self.var_showimg)
+        self.check_showimg.grid(row=2, column=1)
+
         # sets whether the captured image is saved and where it is saved
         self.label_saveimg = tk.Label(self.frame_settings, text="Save Image")
-        self.label_saveimg.grid(row=2, column=0)
+        self.label_saveimg.grid(row=3, column=0)
 
         self.var_saveimg = tk.BooleanVar(value=False)
         self.check_saveimg = ttk.Checkbutton(self.frame_settings, variable=self.var_saveimg)
-        self.check_saveimg.grid(row=2, column=1)
+        self.check_saveimg.grid(row=3, column=1)
         
         dir_width = 50
         self.saveimg_dir = ttk.Entry(self.frame_settings, width=dir_width)
-        self.saveimg_dir.grid(row=2, column=2)
+        self.saveimg_dir.grid(row=3, column=2)
 
         self.butt_saveimg_changedir = ttk.Button(self.frame_settings, text="...", width=3, command=self.change_saveimg_dir)
-        self.butt_saveimg_changedir.grid(row=2, column=3)
+        self.butt_saveimg_changedir.grid(row=3, column=3)
 
         # sets whether the scanned text is saved and where it is saved
         self.label_savetxt = tk.Label(self.frame_settings, text="Save Text")
-        self.label_savetxt.grid(row=3, column=0)
+        self.label_savetxt.grid(row=4, column=0)
 
         self.var_savetxt = tk.BooleanVar(value=False)
         self.check_savetxt = ttk.Checkbutton(self.frame_settings, variable=self.var_savetxt)
-        self.check_savetxt.grid(row=3, column=1)
+        self.check_savetxt.grid(row=4, column=1)
 
         self.savetxt_dir = ttk.Entry(self.frame_settings, width=dir_width)
-        self.savetxt_dir.grid(row=3, column=2)
+        self.savetxt_dir.grid(row=4, column=2)
 
         self.butt_savetxt_changedir = ttk.Button(self.frame_settings, text="...", width=3, command=self.change_savetxt_dir)
-        self.butt_savetxt_changedir.grid(row=3, column=3)
+        self.butt_savetxt_changedir.grid(row=4, column=3)
 
         # sets whether the tts audio file is saved and where it is saved
         self.label_saveaudio = tk.Label(self.frame_settings, text="Save Audio")
-        self.label_saveaudio.grid(row=4, column=0)
+        self.label_saveaudio.grid(row=5, column=0)
 
         self.var_saveaudio = tk.BooleanVar(value=False)
         self.check_saveaudio = ttk.Checkbutton(self.frame_settings, variable=self.var_saveaudio)
-        self.check_saveaudio.grid(row=4, column=1)
+        self.check_saveaudio.grid(row=5, column=1)
 
         self.saveaudio_dir = ttk.Entry(self.frame_settings, width=dir_width)
-        self.saveaudio_dir.grid(row=4, column=2)
+        self.saveaudio_dir.grid(row=5, column=2)
 
         self.butt_saveaudio_changedir = ttk.Button(self.frame_settings, text="...", width=3, command=self.change_saveaudio_dir)
-        self.butt_saveaudio_changedir.grid(row=4, column=3)
+        self.butt_saveaudio_changedir.grid(row=5, column=3)
 
         self.frame_settings.grid(row=0, column=1)
 
