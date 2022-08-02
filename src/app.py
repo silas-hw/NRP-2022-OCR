@@ -126,9 +126,7 @@ class Interface(tk.Tk):
             result, img = self.cv_cam.read()
 
             self.current_img = img
-            img_arr = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-            img_pil = Image.fromarray(img_arr)
-            img_tk = ImageTk.PhotoImage(img_pil)
+            img_tk = self.__cv_to_tk(img)
 
             self.label_video.config(image=img_tk)
             self.label_video.image = img_tk
@@ -180,6 +178,18 @@ class Interface(tk.Tk):
         filedir = filedialog.askopenfilename(filetypes=[('JPEG Image', '.jpg'), ('PNG Image', '.png')])
         img = cv2.imread(filedir)
         self.scan(img)
+
+    def display_image(self, cv_img, msg='Preprocessed Image'):
+        '''
+        Displays an image to the user in a seperate window. 
+
+        This is used to show a preprocessed image if the user selects to do so
+        '''
+        img_tk = self.__cv_to_tk(cv_img)
+        window = tk.Toplevel()
+        window.title(msg)
+        tk.Label(window, image=img_tk).pack()
+
     
     def change_saveimg_dir(self):
         '''
@@ -207,6 +217,17 @@ class Interface(tk.Tk):
         new_dir = filedialog.askdirectory()
         self.saveaudio_dir.delete(0, tk.END)
         self.saveaudio_dir.insert(0, new_dir)
+
+    def __cv_to_tk(self, cv_img):
+        '''
+        converts an opencv image object to a tkinter image object
+        '''
+        img_arr = cv2.cvtColor(cv_img, cv2.COLOR_BGR2RGB)
+        img_pil = Image.fromarray(img_arr)
+        img_tk = ImageTk.PhotoImage(img_pil)
+
+        return img_tk
+
 
 if __name__ == '__main__':
     app = Interface()
