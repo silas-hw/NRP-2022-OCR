@@ -156,6 +156,8 @@ class Interface(tk.Tk):
         
         self.stop_video()
 
+        self.loading_screen = LoadingBar()
+
         preprocess = self.var_preprocess.get()
         showimg = self.var_showimg.get()
         saveimg = self.var_saveimg.get()
@@ -184,6 +186,8 @@ class Interface(tk.Tk):
             self.after(100, self.scan_processed_img_callback, showimg, saveimg, savetxt)
             return
 
+        self.loading_screen.destroy()
+    
         processed_img = self.img_result_var[0]
         txt = self.img_result_var[1]
 
@@ -198,7 +202,7 @@ class Interface(tk.Tk):
         # save the text if the user specified to do so
         if savetxt:
             filename = simpledialog.askstring('Text File Name', 'Enter text file name')
-            with open(f'{self.savetxt_dir.get()}/{filename}.jpg', 'w') as f:
+            with open(f'{self.savetxt_dir.get()}/{filename}.txt', 'w') as f:
                 f.write(txt)
 
         self.img_result_var = [None, None, False]
@@ -274,6 +278,19 @@ class Interface(tk.Tk):
         img_tk = ImageTk.PhotoImage(img_pil)
 
         return img_tk
+
+class LoadingBar(tk.Toplevel):
+
+    def __init__(self):
+        super.__init__()
+        self.title('loading...')
+    
+        pb = ttk.Progressbar(self, orient='horizontal', mode='indeterminate', length=280)
+        pb.pack()
+        pb.start()
+
+        self.attributes('-disabled', True)
+
 
 if __name__ == '__main__':
     app = Interface()
