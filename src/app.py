@@ -169,7 +169,7 @@ class Interface(tk.Tk):
     
     def background_scan_callback(self, img, preprocess, result_var:list):
         '''
-        Processew the image with Tesseract and OpenCV in a separate thread
+        Processes the image with Tesseract and OpenCV in a separate thread
         '''
         processed_img, txt = self.ocr.scan_image(img, preprocess)
         result_var[0] = processed_img
