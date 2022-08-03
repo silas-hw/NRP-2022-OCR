@@ -237,7 +237,6 @@ class Interface(tk.Tk):
         label_img = tk.Label(window, image=img_tk)
         label_img.image = img_tk
         label_img.pack()
-
     
     def change_saveimg_dir(self):
         '''

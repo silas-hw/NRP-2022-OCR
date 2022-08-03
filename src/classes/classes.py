@@ -25,12 +25,18 @@ class OCR:
 
     def preprocess(self, image):
         
+        image = self.resize(image)
         image = self.pixel_transform(image, 2.0, 0)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) # convert to grayscale
         #image = cv2.filter2D(src=image, ddepth=-1, kernel=self.img_kernel) # sharpen
 
         image = self.deskew(image)
         return image
+
+    def resize(self, image):
+        w = image.shape[1]
+        scale_factor = 700/w
+        return cv2.resize(image, None, fx=scale_factor, fy=scale_factor, interpolation=cv2.INTER_LINEAR)
 
     def pixel_transform(self, image, alpha, beta):
         '''
@@ -65,7 +71,6 @@ class OCR:
             return image
         return self.deskew(image)
         
-
     def __get_deskew_angle(self, image):
         thresh = cv2.bitwise_not(image) # inverse colours
         thresh = cv2.threshold(thresh, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
