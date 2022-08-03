@@ -162,12 +162,12 @@ class Interface(tk.Tk):
         savetxt = self.var_savetxt.get()
 
         self.img_result_var = [None, None, False] # [image, text, finished:boolean], the finished value is used to check if the preprocessing has finished
-        preprocess_thread = threading.Thread(target=self.background_scan_callback, args=(img, preprocess, self.img_result_var))
+        preprocess_thread = threading.Thread(target=self.scan_thread_callback, args=(img, preprocess, self.img_result_var))
         preprocess_thread.start()
 
         self.scan_processed_img_callback(showimg, saveimg, savetxt)
     
-    def background_scan_callback(self, img, preprocess, result_var:list):
+    def scan_thread_callback(self, img, preprocess, result_var:list):
         '''
         Processes the image with Tesseract and OpenCV in a separate thread
         '''
