@@ -226,8 +226,9 @@ class Interface(tk.Tk):
         Import an image and scan it
         '''
         filedir = filedialog.askopenfilename(filetypes=[('JPEG Image', '.jpg'), ('PNG Image', '.png')])
-        img = cv2.imread(filedir)
-        self.scan(img)
+        if filedir:
+            img = cv2.imread(filedir)
+            self.scan(img)
 
     def display_image(self, cv_img, msg='Preprocessed Image'):
         '''
