@@ -2,7 +2,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import filedialog, simpledialog
 
-import multiprocessing
+import threading
 
 import cv2 as cv2
 from PIL import Image, ImageTk
@@ -133,7 +133,19 @@ class Interface(tk.Tk):
 
             self.after(150, self.update_video) # repeat function after 1 millisecond
 
-
+    ###################################################################################################################################################################
+    # Image Scanning Related Methods                                                                                                                                  #
+    #                                                                                                                                                                 #                  
+    # A lot of callbacks and threads are used her. Basically, the scan function gathers all the initial data before calling on a thread to                            #  
+    # preprocess the image. This method stores the scanned image and text to an immutable object (list) so the rest of the program can still                          #
+    # access the same data. A separate callback then checks this immutable object every second to see if the preprocessing has finished. If it has                    #  
+    # It carries out any file operations it needs to and then calls on the tts method in classes.py to vocalise the text. This happens in a separate process          #  
+    # as well, so the time that the TTS should take to finish is calculated and Tkinter is told to wait that amount of time before re-enabling the buttons            #  
+    #                                                                                                                                                                 #  
+    # All of this happens because any blocking functions would break the GUI and cause it to not respond. Therefore, long winded operations need to occur             #  
+    # in a separate process or thread.                                                                                                                                #
+    ###################################################################################################################################################################
+             
     def scan(self, img):
         '''
         called when the user presses the 'scan image' button
@@ -146,34 +158,62 @@ class Interface(tk.Tk):
 
         preprocess = self.var_preprocess.get()
         showimg = self.var_showimg.get()
+        saveimg = self.var_saveimg.get()
+        savetxt = self.var_savetxt.get()
 
+        self.img_result_var = [None, None, False] # [image, text, finished:boolean], the finished value is used to check if the preprocessing has finished
+        preprocess_thread = threading.Thread(target=self.background_scan_callback, args=(img, preprocess, self.img_result_var))
+        preprocess_thread.start()
+
+        self.scan_processed_img_callback(showimg, saveimg, savetxt)
+    
+    def background_scan_callback(self, img, preprocess, result_var:list):
+        '''
+        Processew the image with Tesseract and OpenCV in a separate thread
+        '''
         processed_img, txt = self.ocr.scan_image(img, preprocess)
+        result_var[0] = processed_img
+        result_var[1] = txt
+        result_var[2] = True
+
+    def scan_processed_img_callback(self, showimg, saveimg, savetxt):
+        '''
+        Carries out file I/O and tts operations when the captured image has been preprocessed
+        '''
+        if not self.img_result_var[2]:
+            self.after(100, self.scan_processed_img_callback, showimg, saveimg, savetxt)
+            return
+
+        processed_img = self.img_result_var[0]
+        txt = self.img_result_var[1]
 
         if showimg:
             self.display_image(processed_img)
 
         # save the image if the user specified to do so
-        if self.var_saveimg.get():
+        if saveimg:
             filename = simpledialog.askstring('Image Name', 'Enter image file name')
             cv2.imwrite(f'{self.saveimg_dir.get()}/{filename}.jpg', processed_img)
 
         # save the text if the user specified to do so
-        if self.var_savetxt.get():
+        if savetxt:
             filename = simpledialog.askstring('Text File Name', 'Enter text file name')
             with open(f'{self.savetxt_dir.get()}/{filename}.jpg', 'w') as f:
                 f.write(txt)
-        
+
         tts_time = int((len(txt.split())/self.ocr.tts_rate)*60000) + 3500 # calculate how long the TTS should take in milliseconds
         self.ocr.tts(txt)
         
         self.after(tts_time, self.scan_finished) # wait the amount of time the TTS should take to reactive buttons
-
+        
     def scan_finished(self):
         self.start_video()
 
         # reactivate buttons
         self.butt_scan.state(['!disabled'])
         self.butt_import.state(['!disabled'])
+
+    #####################################################
 
     def import_image(self):
         '''
@@ -233,7 +273,6 @@ class Interface(tk.Tk):
         img_tk = ImageTk.PhotoImage(img_pil)
 
         return img_tk
-
 
 if __name__ == '__main__':
     app = Interface()
