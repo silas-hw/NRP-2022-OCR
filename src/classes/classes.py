@@ -25,12 +25,30 @@ class OCR:
 
     def preprocess(self, image):
         
+        image = self.pixel_transform(image, 2.0, 0)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) # convert to grayscale
         #image = cv2.filter2D(src=image, ddepth=-1, kernel=self.img_kernel) # sharpen
 
         image = self.deskew(image)
         return image
+
+    def pixel_transform(self, image, alpha, beta):
+        '''
+        Performs basic pixel transformations on an image, such as:
+            - Altering contrast
+            - Altering brightness
+
+        Alpha Value -> Contrast
+        Beta Value -> Brightness
+        '''
+        new_img = np.zeros(image.shape, image.dtype)
+        for row in range(image.shape[0]):
+            for col in range(image.shape[1]):
+                for bgr in range(image.shape[2]):
+                    new_img[row][col][bgr] = np.clip(alpha*image[row][col][bgr] + beta, 0, 255)
         
+        return new_img
+
     def deskew(self, image):
         '''
         orientates an image so any text displayed is correctly aligned
