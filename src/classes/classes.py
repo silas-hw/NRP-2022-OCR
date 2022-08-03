@@ -3,76 +3,100 @@
 #   - OCR
 #   - Text-to-speech
 # Image capturing will be handled by the UI so don't worry about that
-from xmlrpc.client import Boolean
 import pytesseract
 import pyttsx3
 import cv2
+import re
 import numpy as np
 
-import nltk
-from nltk.corpus import words 
-from nltk.metrics.distance import edit_distance, jaccard_distance
-from nltk.util import ngrams
-nltk.download('words')
+import autocorrect
 
+import multiprocessing as mp
 
 class OCR:
 
     def __init__(self, tts_rate=150):
-        self.tts_rate = 150
+        self.tts_rate = tts_rate
         self.img_kernel = np.array([[0, -1, 0],
                                     [-1, 5,-1],
                                     [0, -1, 0]])
 
+        self.speller = autocorrect.Speller()
+
     def preprocess(self, image):
         
+        image = self.pixel_transform(image, 2.0, 0)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) # convert to grayscale
-        image = cv2.filter2D(src=image, ddepth=-1, kernel=self.img_kernel) # sharpen
-        image = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1] # threshold image
+        #image = cv2.GaussianBlur(image,(5,5),0) # blur
+        #image = cv2.filter2D(src=image, ddepth=-1, kernel=self.img_kernel) # sharpen
 
+        image = self.deskew(image)
         return image
+
+    def pixel_transform(self, image, alpha, beta):
+        '''
+        Performs basic pixel transformations on an image, such as:
+            - Altering contrast
+            - Altering brightness
+        Alpha Value -> Contrast
+        Beta Value -> Brightness
+        '''
+        new_img = np.zeros(image.shape, image.dtype)
+        for row in range(image.shape[0]):
+            for col in range(image.shape[1]):
+                for bgr in range(image.shape[2]):
+                    new_img[row][col][bgr] = np.clip(alpha*image[row][col][bgr] + beta, 0, 255)
         
+        return new_img
+
+    def deskew(self, image):
+        '''
+        orientates an image so any text displayed is correctly aligned
+        '''
+        angle = self.__get_deskew_angle(image)
+    
+        (h, w) = image.shape[:2]
+        center = (w // 2, h // 2)
+        m = cv2.getRotationMatrix2D(center, angle, 1.0)
+        image = cv2.warpAffine(image, m, (w, h),
+            flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
+        
+        if self.__get_deskew_angle(image) == 0:
+            return image
+        return self.deskew(image)
+        
+
+    def __get_deskew_angle(self, image):
+        thresh = cv2.bitwise_not(image) # inverse colours
+        thresh = cv2.threshold(thresh, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
+        coords = np.column_stack(np.where(thresh > 0)) # image is thresheld so any black pixel should be text
+        angle = cv2.minAreaRect(coords)[-1] # angle will be between 0 (exclusive) and 90 (inclusive)
+
+        if angle > 45:
+            angle = 90 - angle
+
+        return angle
+
     def scan_image(self, image, preprocess:bool):
         if preprocess:
             image = self.preprocess(image)
-            
-        return image, pytesseract.image_to_string(image)
-
-    def tts(self,text):
-        # initialises the tts engine
-        engine = pyttsx3.init()
-
-        # the speed of the tts
-        engine.setProperty("rate", self.tts_rate)
-
-        # tells the tts engine what it needs to say
-        engine.say(text)
-
-        # runs the tts engine
-        engine.runAndWait()
-    
-    def deskew(self,image):
-        image = cv2.imread('image.jpg')
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        image = cv2.bitwise_not(image)
-        thresh = cv2.threshold(image, 0, 255,
-            cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
-
-        coords = np.column_stack(np.where(thresh > 0))
-        angle = cv2.minAreaRect(coords)[-1]
-
-        if angle < -45:
-            angle = -(90 + angle)
-        else:
-            angle = -angle
-
-        (h, w) = image.shape[:2]
-        center = (w // 2, h // 2)
-        M = cv2.getRotationMatrix2D(center, angle, 1.0)
-        image = cv2.warpAffine(image, M, (w, h),
-            flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
-
-        cv2.putText(image, "Angle: {:.2f} degrees".format(angle),
-            (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
         
-        return image
+        txt = pytesseract.image_to_string(image)
+        txt = self.speller(txt) # autocorrect text to fix any minor ocr errors
+        return image, txt
+
+    def tts(self, txt):
+        # run the TTS in a seperate process
+        process = mp.Process(target=self.tts_callback, args=(txt, self.tts_rate))
+        process.start()
+
+    def tts_callback(self, txt, tts_rate):
+        '''
+        used as a target for multiprocessing
+        Note: Python seems to kill 'zombie' processes as soon as their target function finishes running
+        '''
+        
+        tts_engine = pyttsx3.init()
+        tts_engine.setProperty('rate', tts_rate)
+        tts_engine.say(txt)
+        tts_engine.runAndWait()
