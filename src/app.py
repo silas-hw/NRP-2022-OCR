@@ -156,7 +156,7 @@ class Interface(tk.Tk):
         
         self.stop_video()
 
-        self.loading_screen = LoadingBar()
+        self.loading_screen = LoadingBar(self)
 
         preprocess = self.var_preprocess.get()
         showimg = self.var_showimg.get()
@@ -281,8 +281,8 @@ class Interface(tk.Tk):
 
 class LoadingBar(tk.Toplevel):
 
-    def __init__(self):
-        super.__init__()
+    def __init__(self, master):
+        super().__init__(master)
         self.title('loading...')
     
         pb = ttk.Progressbar(self, orient='horizontal', mode='indeterminate', length=280)
