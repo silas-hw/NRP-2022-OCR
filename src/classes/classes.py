@@ -26,7 +26,7 @@ class OCR:
     def preprocess(self, image):
         
         image = self.resize(image)
-        image = self.pixel_transform(image, 2.0, 0)
+        image = self.pixel_transform(image, 1.5, 0)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) # convert to grayscale
         #image = cv2.GaussianBlur(image,(5,5),0) # blur
         #image = cv2.filter2D(src=image, ddepth=-1, kernel=self.img_kernel) # sharpen
