@@ -28,6 +28,7 @@ class OCR:
         image = self.resize(image)
         image = self.pixel_transform(image, 2.0, 0)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) # convert to grayscale
+        #image = cv2.GaussianBlur(image,(5,5),0) # blur
         #image = cv2.filter2D(src=image, ddepth=-1, kernel=self.img_kernel) # sharpen
 
         image = self.deskew(image)
@@ -43,7 +44,6 @@ class OCR:
         Performs basic pixel transformations on an image, such as:
             - Altering contrast
             - Altering brightness
-
         Alpha Value -> Contrast
         Beta Value -> Brightness
         '''
@@ -98,7 +98,6 @@ class OCR:
     def tts_callback(self, txt, tts_rate):
         '''
         used as a target for multiprocessing
-
         Note: Python seems to kill 'zombie' processes as soon as their target function finishes running
         '''
         
