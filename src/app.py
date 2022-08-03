@@ -136,7 +136,7 @@ class Interface(tk.Tk):
     ###################################################################################################################################################################
     # Image Scanning Related Methods                                                                                                                                  #
     #                                                                                                                                                                 #                  
-    # A lot of callbacks and threads are used her. Basically, the scan function gathers all the initial data before calling on a thread to                            #  
+    # A lot of callbacks and threads are used here. Basically, the scan function gathers all the initial data before calling on a thread to                           #  
     # preprocess the image. This method stores the scanned image and text to an immutable object (list) so the rest of the program can still                          #
     # access the same data. A separate callback then checks this immutable object every second to see if the preprocessing has finished. If it has                    #  
     # It carries out any file operations it needs to and then calls on the tts method in classes.py to vocalise the text. This happens in a separate process          #  
@@ -200,6 +200,8 @@ class Interface(tk.Tk):
             filename = simpledialog.askstring('Text File Name', 'Enter text file name')
             with open(f'{self.savetxt_dir.get()}/{filename}.jpg', 'w') as f:
                 f.write(txt)
+
+        self.img_result_var = [None, None, False]
 
         tts_time = int((len(txt.split())/self.ocr.tts_rate)*60000) + 3500 # calculate how long the TTS should take in milliseconds
         self.ocr.tts(txt)
