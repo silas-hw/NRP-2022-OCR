@@ -202,7 +202,7 @@ class Interface(tk.Tk):
         # save the text if the user specified to do so
         if savetxt:
             filename = simpledialog.askstring('Text File Name', 'Enter text file name')
-            with open(f'{self.savetxt_dir.get()}/{filename}.txt', 'w') as f:
+            with open(f'{self.savetxt_dir.get()}/{filename}.txt', 'w', encoding='utf-8') as f:
                 f.write(txt)
 
         self.img_result_var = [None, None, False]
