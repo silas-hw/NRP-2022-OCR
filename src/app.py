@@ -228,6 +228,7 @@ class Interface(tk.Tk):
     def display_image(self, cv_img, msg='Preprocessed Image'):
         '''
         Displays an image to the user in a seperate window. 
+
         This is used to show a preprocessed image if the user selects to do so
         '''
         img_tk = self.__cv_to_tk(cv_img)
