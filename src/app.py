@@ -31,13 +31,16 @@ class Interface(tk.Tk):
         self.frame_butts = tk.Frame(self.frame_main)
 
         self.butt_scan = ttk.Button(self.frame_butts, text="Scan Image", command=lambda: self.scan(self.current_img))
-        self.butt_scan.grid(row=1, column=0)
+        self.butt_scan.grid(row=1, column=0, sticky=tk.NW)
 
         self.butt_import = ttk.Button(self.frame_butts, text="Import Image ⭳", command=self.import_image)
-        self.butt_import.grid(row=1, column=1)
+        self.butt_import.grid(row=1, column=1, sticky=tk.NW)
 
-        self.frame_butts.grid(row=1, column=0)
-        self.frame_main.grid(row=0, column=0)
+        self.loadingbar = LoadingBar(self.frame_butts)
+        self.loadingbar.grid(row=1, column=2, sticky=tk.NE)
+
+        self.frame_butts.grid(row=1, column=0, sticky=tk.NW)
+        self.frame_main.grid(row=0, column=0, sticky=tk.NW)
 
         ############
         # settings #
@@ -156,7 +159,7 @@ class Interface(tk.Tk):
         
         self.stop_video()
 
-        self.loading_screen = LoadingBar(self)
+        self.loadingbar.show()
 
         preprocess = self.var_preprocess.get()
         showimg = self.var_showimg.get()
@@ -186,7 +189,7 @@ class Interface(tk.Tk):
             self.after(100, self.scan_processed_img_callback, showimg, saveimg, savetxt)
             return
 
-        self.loading_screen.destroy()
+        self.loadingbar.hide()
     
         processed_img = self.img_result_var[0]
         txt = self.img_result_var[1]
@@ -280,18 +283,36 @@ class Interface(tk.Tk):
 
         return img_tk
 
-class LoadingBar(tk.Toplevel):
+class LoadingBar(tk.Frame):
 
-    def __init__(self, master):
+    def __init__(self, master, msg="Loading..."):
         super().__init__(master)
-        self.title('loading...')
-    
-        pb = ttk.Progressbar(self, orient='horizontal', mode='indeterminate', length=280)
-        pb.pack()
-        pb.start()
 
-        self.attributes('-disabled', True)
+        self._msg = msg
 
+        self.pb = ttk.Progressbar(self, orient='horizontal', mode='indeterminate', length=280)
+        
+        self.label_msg = ttk.Label(self, text=self._msg)
+
+    @property
+    def msg(self):
+        return self._msg
+
+    @msg.setter
+    def msg(self, new_msg):
+        self._msg = new_msg
+        self.label_msg.config(text=self._msg)
+
+    def show(self):
+        self.pb.grid(row=0, column=0)
+        self.pb.start()
+
+        self.label_msg.grid(row=0, column=1)
+
+    def hide(self):
+        self.pb.stop()
+        self.pb.grid_forget()
+        self.label_msg.grid_forget()
 
 if __name__ == '__main__':
     app = Interface()
