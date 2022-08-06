@@ -8,6 +8,7 @@ import pyttsx3
 import cv2
 import re
 import numpy as np
+import random
 
 import autocorrect
 
@@ -26,7 +27,7 @@ class OCR:
     def preprocess(self, image):
         
         image = self.resize(image)
-        image = self.pixel_transform(image, 1.5, 0)
+        image = self.pixel_transform(image, 1.3, 0)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) # convert to grayscale
         #image = cv2.GaussianBlur(image,(5,5),0) # blur
         #image = cv2.filter2D(src=image, ddepth=-1, kernel=self.img_kernel) # sharpen
@@ -39,7 +40,7 @@ class OCR:
         scale_factor = 700/w
         return cv2.resize(image, None, fx=scale_factor, fy=scale_factor, interpolation=cv2.INTER_LINEAR)
 
-    def pixel_transform(self, image, alpha, beta):
+    def pixel_transform(self, image, alpha=0, beta=0, target_avg=127):
         '''
         Performs basic pixel transformations on an image, such as:
             - Altering contrast
@@ -47,11 +48,17 @@ class OCR:
         Alpha Value -> Contrast
         Beta Value -> Brightness
         '''
+
+        # used to brighten dim images and dim bright images
+        avg_value = np.average(image)
+        diff = target_avg-avg_value
+        beta += diff
+
         new_img = np.zeros(image.shape, image.dtype)
         for row in range(image.shape[0]):
             for col in range(image.shape[1]):
                 for bgr in range(image.shape[2]):
-                    new_img[row][col][bgr] = np.clip(alpha*image[row][col][bgr] + beta, 0, 255)
+                    new_img[row][col][bgr] = np.clip(alpha*(image[row][col][bgr] + beta), 0, 255) # brighten image then apply contrast
         
         return new_img
 
