@@ -284,6 +284,9 @@ class Interface(tk.Tk):
         return img_tk
 
 class LoadingBar(tk.Frame):
+    '''
+    Custom loading bar widget that can easily be shown or hidden
+    '''
 
     def __init__(self, master, msg="Loading..."):
         super().__init__(master)
