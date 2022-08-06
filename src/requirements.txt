@@ -1,5 +1,5 @@
 opencv-python==4.6.0.66
-Pillow=9.2.0
+Pillow==9.2.0
 pytesseract==0.3.9
-pyttsx==2.90
+pyttsx3==2.90
 autocorrect==2.6.1
